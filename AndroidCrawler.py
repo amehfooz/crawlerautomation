@@ -1,4 +1,8 @@
 # pip install pyopenssl --target=libs
+# pip install pyquery --target=libs
+# pip install requests --target=libs
+# pip install google-apy-client-python --target=libs
+
 import requests
 import pyquery
 import json
@@ -189,7 +193,7 @@ class AndroidCrawler(BaseCrawler):
         new_reviews = self.result['reviews']
         #print new_reviews[1]['date']
 
-        service_account = 'apps-1149@appspot.gserviceaccount.com'# Service account email       
+        service_account = 'naveed@apps-1149.iam.gserviceaccount.com'# Service account email       
         json_key = 'sevice_key.json'# JSON key provided by Google
 
         # Inserting data into table.
@@ -206,7 +210,11 @@ class AndroidCrawler(BaseCrawler):
 
         rows =  [
         {
-        'Name': str(self.result['name']),'Store': str(self.result['store']), 'Price': price_in_rupees, 'IsFree': isfree ,'App_Id':str(self.result['app_id']),'Store_Url':str(self.result['storeurl']),'Category':str(self.result['category']) , 'subCategory':str(self.result['subcategory']) , 'Icon': str(self.result['icon']), 'Screenshots': str(self.result['screenshots']), 'Description' :self.result['description'], 'Downloads':str(self.result['downloads']), 'Permissions': str(self.result['permissions']), 'Developer': str(self.result['developer']), 'contentRating': str(self.result['contentRating']) , 'developerWebsite': str(self.result['developerWebsite']) ,'Reviews': str(self.result['reviews']) ,'reviewDate':str(new_reviews[0]['date']) ,'reviewAuthor':str(new_reviews[0]['authorname']) , 'reviewRating':str(new_reviews[0]['rating']) ,'reviewTitle': str(new_reviews[1]['title']) , 'reviewTexts' :str(new_reviews[1]['text']), 'Version' : str(self.result['version']),'Updateds': str(self.result['updated']), 'Rating' : str(self.result['rating']), 'appSize':self.result['AppSize'], 'lastUpdateDate': self.result['LastUpdateDate'] , 'installations': self.result['installations'], 'MinimumOSVersion': self.result['MinimumOSVersion'], 'developerEmail': self.result['developerEmail'], 'whatsNew': self.result['whatsNew'],'physicalAddress': self.result['physicalAddress']
+        'Name': str(self.result['name']),'Store': str(self.result['store']), 'Price': price_in_rupees, 'IsFree': isfree ,'App_Id':str(self.result['app_id']),
+        'Store_Url':str(self.result['storeurl']),'Category':str(self.result['category']) , 'subCategory':str(self.result['subcategory']) , 'Icon': str(self.result['icon']), 
+        'Screenshots': str(self.result['screenshots']), 'Description' :self.result['description'], 'Downloads':str(self.result['downloads']), 
+        'Permissions': str(self.result['permissions']), 'Developer': str(self.result['developer']), 'contentRating': str(self.result['contentRating']) , 
+        'developerWebsite': str(self.result['developerWebsite']) ,'Reviews': str(self.result['reviews']) #,'reviewDate':str(new_reviews[0]['date']) ,'reviewAuthor':str(new_reviews[0]['authorname']) , 'reviewRating':str(new_reviews[0]['rating']) ,'reviewTitle': str(new_reviews[1]['title']) , 'reviewTexts' :str(new_reviews[1]['text']), 'Version' : str(self.result['version']),'Updateds': str(self.result['updated']), 'Rating' : str(self.result['rating']), 'appSize':self.result['AppSize'], 'lastUpdateDate': self.result['LastUpdateDate'] , 'installations': self.result['installations'], 'MinimumOSVersion': self.result['MinimumOSVersion'], 'developerEmail': self.result['developerEmail'], 'whatsNew': self.result['whatsNew'],'physicalAddress': self.result['physicalAddress']
 }
 ]
 
@@ -214,7 +222,7 @@ class AndroidCrawler(BaseCrawler):
 
         try:
             _job_id, results = client.query('SELECT Description  FROM [Temp.AndroidAppsData] LIMIT 1', timeout=200)
-            print results
+            #print results
         except :
             print "Timeout"
 

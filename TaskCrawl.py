@@ -6,7 +6,18 @@ import webapp2
 from google.appengine.api import taskqueue
 from AndroidCrawler import AndroidCrawler
 
-class CrawlHandler(webapp2.RequestHandler):
+HOST = 'localhost'
+DB = 'carbyne'
+USER = 'root'
+PWD = 'wireless'
+
+class CrawlHandler(webapp2.RequestHandler):        
+    def populate_tasks():
+        exists = client.check_table('Temp', 'TaskTable')
+        if !exists:
+            create_TaskTable()
+
+
     def post(self):
         taskqueue.add(url='/worker')
         
