@@ -1,0 +1,6 @@
+backends:
+- name: backendfortasks
+  class: B2
+  instances: 1
+  start: BackEndStartScript.py
+  options: dynamic

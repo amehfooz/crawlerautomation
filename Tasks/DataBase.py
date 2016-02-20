@@ -34,7 +34,7 @@ class DataBase(object):
 
     def populate(self, table):
         client = get_client(project_id, json_key_file=json_key, readonly=False)
-        qry = "SELECT Name, Url  FROM [%s] LIMIT 1000" % table
+        qry = "SELECT Name, Url  FROM [%s] LIMIT 2" % table
 
         try:
             job_id, results = client.query(qry, timeout=3000)
@@ -83,6 +83,7 @@ class DataBase(object):
         cursor.executemany(query, urls)
 
         self.conn.commit()
-
+        print "UPDATED TABLE"
+        
     def quit(self):
         self.conn.close()

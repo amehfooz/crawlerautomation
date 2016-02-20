@@ -1,11 +1,25 @@
+application: yourappname
 version: 1
 runtime: python27
 api_version: 1
 threadsafe: true
 
 handlers:
+- url: /QueueAMasterTask
+  script: urlhandlers.QueueAMasterTask.app
+  secure: always
+
+- url: /_ah/queue/masterTaskQ
+  script: urlhandlers.HandlerForMasterTaskQ.app
+  secure: always
+
+- url: /_ah/queue/subTaskQ
+  script: urlhandlers.HandlerForSubTaskQ.app
+  secure: always
+
 - url: /.*
-  script: TaskCrawl.app
+  script: server.app
+  secure: always
 
 libraries:
 - name: lxml
