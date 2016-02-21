@@ -40,7 +40,8 @@ class AndroidCrawler(BaseCrawler):
     @staticmethod
     def __get_permissions(app_id):
         techurl = 'https://play.google.com/store/xhr/getdoc?authuser=0&hl=en'
-        html = requests.post(techurl, data={'id': app_id}).text
+ 
+        html = requests.post(techurl, data={'ids': app_id,'xhr': 1}).text
 
         try:
             data = json.loads(html[4:]
@@ -98,11 +99,18 @@ class AndroidCrawler(BaseCrawler):
     def isdone(self):
         return self.done
 
+    def retry(self):
+        if self.ret > 0:
+            self.ret -= 1
+            return True
+        return False
+
     def __init__(self, url, num_reviews=5):
         # set num_reviews to -1 to scrape everything
         #super().__init__(url)
         super(AndroidCrawler, self).__init__(url)
         self.done = False
+        self.ret = 3
 
         self.result['name'] = self.pq('.document-title').text()
         self.check()
@@ -128,14 +136,15 @@ class AndroidCrawler(BaseCrawler):
         self.result['description'] = self.pq('div[itemprop="description"]').text()
         
         
-       
+        
         #print self.result['description'] 
         print "kam ban gya he "
         self.result['downloads'] = self.pq('div[itemprop="numDownloads"]').text()
-       # if not offline:
-            #self.result['permissions'] = self.__get_permissions(self.result['app_id'])
-       # else:
-        self.result['permissions'] = []
+        if not offline:
+            self.result['permissions'] = self.__get_permissions(self.result['app_id'])
+        else:
+            self.result['permissions'] = []
+
         self.result['developer'] = self.pq('.primary').text()
         self.result['contentRating'] = self.pq('.meta-info.contains-text-link > .content').eq(0).text()
         try:
@@ -175,7 +184,15 @@ class AndroidCrawler(BaseCrawler):
         self.result['MinimumOSVersion'] = self.pq('div[itemprop="operatingSystems"]').text()
         
         #self.result['contentRating'] = self.pq('div[itemprop="contentRating"]').text()
-        
+        ratingReason = self.pq('.meta-info.contains-text-link > .content').eq(1).text()
+        if (ratingReason == 'Learn more'):
+            self.result['RatingReason'] = ''
+        else:
+            self.result['RatingReason'] = ratingReason
+
+        ratingText = self.pq('div[itemprop="aggregateRating"]').text().split(' ')
+        self.result['ratingValue'] = ratingText[0]
+        self.result['ratingCount'] = ratingText[1]
         #print self.result['AppSize']
         #print self.result['LastUpdateDate']
         #print self.result['installations']
@@ -220,11 +237,12 @@ class AndroidCrawler(BaseCrawler):
             'Description' :self.result['description'], 'Downloads':str(self.result['downloads']), 'Permissions': str(self.result['permissions']), 
             'Developer': str(self.result['developer']), 'contentRating': str(self.result['contentRating']) , 
             'developerWebsite': str(self.result['developerWebsite']) ,'Reviews': str(self.result['reviews']) ,'reviewDate':str(new_reviews[0]['date']) ,
-            'reviewAuthor':str(new_reviews[0]['authorname']) , 'reviewRating':str(new_reviews[0]['rating']) ,'reviewTitle': str(new_reviews[1]['title']) , 
-            'reviewTexts' :str(new_reviews[1]['text']), 'Version' : str(self.result['version']),'Updateds': str(self.result['updated']), 'Rating' : str(self.result['rating']), 
+            'reviewTitle': str(new_reviews[1]['title']) , 
+            'reviewTexts' :str(new_reviews[1]['text']), 'Version' : str(self.result['version']),'Updates': str(self.result['updated']), 'Rating' : str(self.result['rating']), 
             'appSize':self.result['AppSize'], 'lastUpdateDate': self.result['LastUpdateDate'] , 'installations': self.result['installations'], 
             'MinimumOSVersion': self.result['MinimumOSVersion'], 'developerEmail': self.result['developerEmail'], 'whatsNew': self.result['whatsNew'],
-            'physicalAddress': self.result['physicalAddress']
+            'physicalAddress': self.result['physicalAddress'], 'RatingReason' : self.result['ratingReason'], 'RatingCount' : self.result['ratingCount'],
+            'RatingValue' : self.result['ratingValue']
             }
             ]
         except:
@@ -236,23 +254,13 @@ class AndroidCrawler(BaseCrawler):
             'Description' :self.result['description'], 'Downloads':str(self.result['downloads']), 'Permissions': str(self.result['permissions']), 
             'Developer': str(self.result['developer']), 'contentRating': str(self.result['contentRating']), 
             'developerWebsite': str(self.result['developerWebsite']) ,'Reviews': str(self.result['reviews']), 
-            'Version' : str(self.result['version']),'Updateds': str(self.result['updated']), 'Rating' : str(self.result['rating']), 
+            'Version' : str(self.result['version']),'Updates': str(self.result['updated']), 'Rating' : str(self.result['rating']), 
             'appSize':self.result['AppSize'], 'lastUpdateDate': self.result['LastUpdateDate'] , 'installations': self.result['installations'], 
             'MinimumOSVersion': self.result['MinimumOSVersion'], 'developerEmail': self.result['developerEmail'], 'whatsNew': self.result['whatsNew'],
             'physicalAddress': self.result['physicalAddress']
             }
             ]
 
-        self.done = client.push_rows('Temp', 'AndroidAppsData', rows, 'id')
-
-offline = 0
-
-#url1 = 'https://play.google.com/store/apps/details?id=com.ea.games.nfs13_row&hl=en'
-# list index out of range url1= 'https://play.google.com/store/apps/details?id=com.gwhizmobile.flvspsych'
-#url1='https://play.google.com/store/apps/details?id=com.droidjp'   
-#url1='https://play.google.com/store/apps/details?id=com.RonnyCSHARP.VisualMATH4DLite'  
-url1='https://play.google.com/store/apps/details?id=com.vallalarspace.arutpa'   
-
-AndroidCrawler(url1)
+        self.done = client.push_rows('Temp', 'AndroidTest', rows, 'id')
 
 #print "success"

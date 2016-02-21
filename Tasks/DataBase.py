@@ -35,7 +35,7 @@ class DataBase(object):
 
     def populate(self, table):
         client = get_client(project_id, json_key_file=json_key, readonly=False)
-        qry = "SELECT Name, Url  FROM [%s] LIMIT 2" % table
+        qry = "SELECT Name, Url  FROM [%s] LIMIT 10" % table
 
         try:
             job_id, results = client.query(qry, timeout=3000)

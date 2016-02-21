@@ -19,8 +19,6 @@ class HandlerForMasterTaskQ(webapp2.RequestHandler):
             logThis(AEL_LEVEL_INFO, 'START PROCESSING MASTERTASK FROM MasterTaskQ')
             #Do Something Here
 
-            sys.path.insert(0, 'libs')
-
             dbG.populate('AppStore.GooglePlay_Master_DB')
             urls = dbG.toCrawl()
 

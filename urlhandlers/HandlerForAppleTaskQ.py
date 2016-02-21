@@ -9,22 +9,19 @@ import datetime
 from utilities.logger import logThis, AEL_LEVEL_INFO, AEL_LEVEL_DEBUG,\
     AEL_LEVEL_CRITICAL
 from constants.constants import SUBTASK_WEBREQ_PICKLED_TASKOBJ
-from Tasks.AndroidCrawler import AndroidCrawler
+from Tasks.iosCrawler import IOsCrawler
 from google.appengine.api import taskqueue
 from constants.constants import *
 
-class HandlerForSubTaskQ(webapp2.RequestHandler):
+class HandlerForAppleTaskQ(webapp2.RequestHandler):
     def post(self):
         try:
             logThis(AEL_LEVEL_INFO, 'SUBTASK:START') 
             
             Queue = self.request.get('taskQ')
 
-            if Queue == GAEQ_FOR_APPLE:
-                print 'Apple Task'
-                return
-
-            ac = AndroidCrawler(self.request.get('url'))
+            print "IOS CRAWL STARTING"
+            ac = IOsCrawler(self.request.get('url'))
             
             logThis(AEL_LEVEL_INFO, str(ac.isdone()) )
 
@@ -45,6 +42,6 @@ class HandlerForSubTaskQ(webapp2.RequestHandler):
 
         #POST EXCEPT 
         except:
-            logThis(AEL_LEVEL_CRITICAL, "EXP on HandlerForSubTaskQ-" + traceback.format_exc())
+            logThis(AEL_LEVEL_CRITICAL, "EXP on HandlerForAppleTaskQ-" + traceback.format_exc())
                         
-app = webapp2.WSGIApplication([('/_ah/queue/googleTaskQ', HandlerForSubTaskQ)], debug=True)
+app = webapp2.WSGIApplication([('/_ah/queue/appleTaskQ', HandlerForAppleTaskQ)], debug=True)

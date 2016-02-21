@@ -18,8 +18,9 @@ handlers:
   secure: always
 
 - url: /_ah/queue/appleTaskQ
-  script: urlhandlers.HandlerForSubTaskQ.app
-  
+  script: urlhandlers.HandlerForAppleTaskQ.app
+  secure: always
+
 - url: /.*
   script: server.app
   secure: always
