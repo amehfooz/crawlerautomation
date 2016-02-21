@@ -33,5 +33,5 @@ class HandlerForSubTaskQ(webapp2.RequestHandler):
         except:
             logThis(AEL_LEVEL_CRITICAL, "EXP on HandlerForSubTaskQ-" + traceback.format_exc())
                         
-app = webapp2.WSGIApplication([('/_ah/queue/subTaskQ', HandlerForSubTaskQ)
+app = webapp2.WSGIApplication([('/_ah/queue/googleTaskQ', HandlerForSubTaskQ)
                    ], debug=True)

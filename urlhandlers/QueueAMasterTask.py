@@ -9,6 +9,9 @@ import re
 import webapp2
 from utilities.logger import logThis, AEL_LEVEL_INFO, AEL_LEVEL_CRITICAL
 from constants.constants import GAET_MASTERTASK_NAME, GAEQ_FOR_MASTERTASK
+import sys
+
+sys.path.insert(0, 'libs')
 
 class QueueAMasterTask(webapp2.RequestHandler): 
     def get(self):

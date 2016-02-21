@@ -2,9 +2,6 @@ from google.appengine.api import apiproxy_stub_map
 from google.appengine.api import runtime
 from utilities.logger import logThis, AEL_LEVEL_WARNING, AEL_LEVEL_INFO
 
-import sys
-sys.path.insert(0, 'libs')
-
 def fashionista_register_shutdown_hook():
     apiproxy_stub_map.apiproxy.CancelApiCalls()
   

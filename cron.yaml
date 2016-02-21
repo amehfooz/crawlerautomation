@@ -1,0 +1,5 @@
+cron:
+- description: DoMasterTask
+  target: backendforqueue
+  url: /QueueAMasterTask
+  schedule: every day 02:25

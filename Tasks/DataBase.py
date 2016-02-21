@@ -7,6 +7,9 @@ project_id = 'apps-1149'
 service_account = 'naveed@apps-1149.iam.gserviceaccount.com'# Service account email       
 json_key = 'sevice_key.json'# JSON key provided by Google
 
+import sys
+sys.path.insert(0, 'libs')
+
 import mysql.connector
 from bigquery import get_client
 
@@ -29,8 +32,6 @@ class DataBase(object):
         cursor = self.conn.cursor()
 
         cursor.execute(query)
-        
-        print "Created Database"
 
     def populate(self, table):
         client = get_client(project_id, json_key_file=json_key, readonly=False)
@@ -60,8 +61,6 @@ class DataBase(object):
     def toCrawl(self):
         query = """SELECT URL FROM %s WHERE ScanStatus = FALSE OR LastScanned < DATE_SUB(NOW(), Interval 31 DAY)""" % self.scantable
 
-        print query
-
         cursor = self.conn.cursor()
         cursor.execute(query)
 
@@ -78,7 +77,8 @@ class DataBase(object):
             query = """UPDATE GooglePlay SET ScanStatus = TRUE, LastScanned = NOW() WHERE URL = %s OR 1 = %s"""
         elif self.scantable == 'AppStore':
             query = """UPDATE AppStore SET ScanStatus = TRUE, LastScanned = NOW() WHERE URL = %s OR 1 = %s"""
-        
+        elif self.scantable == 'Windows':
+            query = """UPDATE Windows SET ScanStatus = TRUE, LastScanned = NOW() WHERE URL = %s OR 1 = %s"""
         cursor = self.conn.cursor()
         cursor.executemany(query, urls)
 

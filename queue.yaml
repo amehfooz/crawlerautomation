@@ -3,8 +3,10 @@ queue:
   target: backendfortasks
   rate: 1/s
   bucket_size: 1
-- name: subTaskQ
+- name: googleTaskQ
   target: backendfortasks
   rate: 1/s
   bucket_size: 1
-
+- name: appleTaskQ
+  target: backendfortasks
+  rate: 1/s

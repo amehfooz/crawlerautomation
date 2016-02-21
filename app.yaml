@@ -13,10 +13,13 @@ handlers:
   script: urlhandlers.HandlerForMasterTaskQ.app
   secure: always
 
-- url: /_ah/queue/subTaskQ
+- url: /_ah/queue/googleTaskQ
   script: urlhandlers.HandlerForSubTaskQ.app
   secure: always
 
+- url: /_ah/queue/appleTaskQ
+  script: urlhandlers.HandlerForSubTaskQ.app
+  
 - url: /.*
   script: server.app
   secure: always
