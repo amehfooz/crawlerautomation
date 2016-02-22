@@ -274,6 +274,6 @@ class AndroidCrawler(BaseCrawler):
             }
             ]
 
-       #self.done = client.push_rows('Temp', 'AndroidTest', rows, 'id')
+       self.done = client.push_rows('Temp', 'AndroidTest', rows, 'id')
 
 #print "success"

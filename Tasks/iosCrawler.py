@@ -4,7 +4,11 @@ import json
 import codecs
 import itertools
 import re
-from iosCrawler import requests, pyquery, json
+import requests, pyquery, json
+from bigquery import get_client
+
+
+offline=0
 
 class BaseCrawler(object):
     
@@ -25,10 +29,27 @@ class BaseCrawler(object):
 
 
 class IOsCrawler(BaseCrawler):
+    def isdone(self):
+        return self.done
 
+    def retry(self):
+        print self.retries[self.url]
+
+        if self.retries[self.url] > 0:
+            self.retries[self.url] -= 1
+            return True
+        return False
+        
     def __init__(self, url):
         #super().__init__(url)
         super(IOsCrawler, self).__init__(url)
+
+        self.done = False
+        self.url = url
+        
+        if url not in self.retries:
+            self.retries[url] = 3
+
         pq = self.pq
         self.result['name'] = pq('h1').text()
         self.check()
@@ -57,43 +78,24 @@ class IOsCrawler(BaseCrawler):
         self.result['version_history'] = pq('div.product-review > p').eq(1).text()
         self.result['updated'] = pq('span[itemprop="datePublished"]').text()
         self.result['languages'] = pq('li.language').find('span').remove().end().text()
-        print self.result['languages'] + "\n"
-        print self.result['updated']+ "\n"
-        print self.result['version_history']+ "\n"
-        print self.result['version']+ "\n"
-        print self.result['name']+ " \n"
-        print self.check()
-        print self.result['store']+ " \n"
-        print self.result['price']+ " \n"
-        print self.result['app_id']+ " \n"
-        print self.result['storeurl']+ " \n"
-        print self.result['category']+ " \n"
-        print self.result['content_rating']+ " \n"
-        print self.result['icon']+ " \n"
-        print self.result['screenshots']
-        print self.result['description'] + " \n"
-        print self.result['developer'] + " \n"
-        print temp
-        print self.result['current_version_rating']+ " \n"
-        print self.result['rating']+ " \n"
-        print self.result['reviews']
-        print extracted_data['authorname'] + " \n"
-        print extracted_data['rating'] + " \n" 
-        print extracted_data['title']+ " \n " 
-        print extracted_data['text']+ "\n"
-        print self.result['reviews']  
-offline=0
-url = "https://itunes.apple.com/us/app/pop-the-lock/id979100082?mt=8&v0=WWW-NAUS-ITSTOP100-FREEAPPS&l=en&ign-mpt=uo%3D4"
-IOsCrawler(url)
-offline=0
-count = 0
+       
+        rows = []
 
-'''
-from bigquery import get_client
-# Insert data into table.
-rows =  [
-    {'id': 'NzAzYmRiA','one': 'ein', 'two': 'zwei'},
-    {'id': 'NzAzYmRiB', 'one': 'uno', 'two': 'dos'},
-    {'id': 'NzAzYmRiC', 'one': 'Aik', 'two': 'Dooo'} 
-]
-inserted = client.push_rows('Temp', 'TestingPython', rows, 'id')'''
+        rows =  [
+        {
+        'Name': str(self.result['name']),'Store': str(self.result['store']), 'Price': self.result['price'],
+        'App_Id':str(self.result['app_id']),'Store_Url':str(self.result['storeurl']),'Category':str(self.result['category']) , 
+        'Icon': str(self.result['icon']), 'Screenshots': str(self.result['screenshots']), 'Description' :self.result['description'], 
+        'Developer': str(self.result['developer']), 'contentRating': str(self.result['content_rating']) ,'Reviews': str(self.result['reviews']) ,
+        'Updated': str(self.result['updated']), 'Rating' : str(self.result['rating']), 'VersionHistory' : self.result['version_history'],
+        'Languages' : self.result['languages'], 'CurrentVersionRating' : self.result['current_version_rating'], 'Version' : str(self.result['version'])
+        }
+        ]
+
+        service_account = 'naveed@apps-1149.iam.gserviceaccount.com'# Service account email       
+        json_key = 'sevice_key.json'# JSON key provided by Google
+
+
+        # Inserting data into table.
+        client = get_client(project_id, json_key_file=json_key, readonly=False)
+        self.done = client.push_rows('Temp', 'AppStoreTest', rows, 'id')
