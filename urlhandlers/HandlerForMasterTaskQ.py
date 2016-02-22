@@ -27,10 +27,10 @@ class HandlerForMasterTaskQ(webapp2.RequestHandler):
 
             dbA.populate('AppStore.AppStore_Master_DB')
 
-            urls = dbA.toCrawl()
+            #urls = dbA.toCrawl()
 
-            for url in urls:
-                self._addSubTaskToQueue(url, GAEQ_FOR_APPLE)
+            #for url in urls:
+                #self._addSubTaskToQueue(url, GAEQ_FOR_APPLE)
 
             logThis(AEL_LEVEL_INFO, 'MASTERTASK: Added SubTasks')
         #POST EXCEPT 
