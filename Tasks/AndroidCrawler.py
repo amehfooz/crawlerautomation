@@ -36,6 +36,7 @@ class BaseCrawler(object):
         self.result = {}
 
 class AndroidCrawler(BaseCrawler):
+    retries = {}
 
     @staticmethod
     def __get_permissions(app_id):
@@ -79,6 +80,7 @@ class AndroidCrawler(BaseCrawler):
                 'id': app_id,
                 'reviewType': 0,
                 'pageNum': page,
+                'xhr' : 1
             })
            # with open(html.text, 'r', encoding='utf8') as f:
             #    s = f.read()
@@ -100,8 +102,10 @@ class AndroidCrawler(BaseCrawler):
         return self.done
 
     def retry(self):
-        if self.ret > 0:
-            self.ret -= 1
+        print self.retries[self.url]
+
+        if self.retries[self.url] > 0:
+            self.retries[self.url] -= 1
             return True
         return False
 
@@ -110,7 +114,10 @@ class AndroidCrawler(BaseCrawler):
         #super().__init__(url)
         super(AndroidCrawler, self).__init__(url)
         self.done = False
-        self.ret = 3
+        self.url = url
+        
+        if url not in self.retries:
+            self.retries[url] = 3
 
         self.result['name'] = self.pq('.document-title').text()
         self.check()
@@ -190,9 +197,13 @@ class AndroidCrawler(BaseCrawler):
         else:
             self.result['RatingReason'] = ratingReason
 
-        ratingText = self.pq('div[itemprop="aggregateRating"]').text().split(' ')
-        self.result['ratingValue'] = ratingText[0]
-        self.result['ratingCount'] = ratingText[1]
+        try:
+            ratingText = self.pq('div[itemprop="aggregateRating"]').text().split(' ')
+            self.result['ratingValue'] = ratingText[0]
+            self.result['ratingCount'] = ratingText[1]
+        except:
+            self.result['ratingValue'] = ''
+            self.result['ratingCount'] = ''
         #print self.result['AppSize']
         #print self.result['LastUpdateDate']
         #print self.result['installations']
@@ -246,6 +257,7 @@ class AndroidCrawler(BaseCrawler):
             }
             ]
         except:
+            print "Incomplete"
             rows =  [
             {
             'Name': str(self.result['name']),'Store': str(self.result['store']), 'Price': price_in_rupees, 'IsFree': isfree ,
@@ -257,10 +269,11 @@ class AndroidCrawler(BaseCrawler):
             'Version' : str(self.result['version']),'Updates': str(self.result['updated']), 'Rating' : str(self.result['rating']), 
             'appSize':self.result['AppSize'], 'lastUpdateDate': self.result['LastUpdateDate'] , 'installations': self.result['installations'], 
             'MinimumOSVersion': self.result['MinimumOSVersion'], 'developerEmail': self.result['developerEmail'], 'whatsNew': self.result['whatsNew'],
-            'physicalAddress': self.result['physicalAddress']
+            'physicalAddress': self.result['physicalAddress'], 'RatingReason' : self.result['RatingReason'], 'RatingCount' : self.result['ratingCount'],
+            'RatingValue' : self.result['ratingValue']
             }
             ]
 
-        self.done = client.push_rows('Temp', 'AndroidTest', rows, 'id')
+       #self.done = client.push_rows('Temp', 'AndroidTest', rows, 'id')
 
 #print "success"

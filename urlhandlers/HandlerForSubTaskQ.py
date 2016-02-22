@@ -6,6 +6,7 @@ import webapp2
 import traceback
 import pickle
 import datetime
+import re
 from utilities.logger import logThis, AEL_LEVEL_INFO, AEL_LEVEL_DEBUG,\
     AEL_LEVEL_CRITICAL
 from constants.constants import SUBTASK_WEBREQ_PICKLED_TASKOBJ
@@ -38,7 +39,7 @@ class HandlerForSubTaskQ(webapp2.RequestHandler):
                 task_name_on_Q = re.sub('[^a-zA-Z0-9_-]', '_', task_name_on_Q)
 
                 taskqueue.add(queue_name=Queue,name=task_name_on_Q,
-                              params={'url': taskObj, 'taskQ' : Queue} )
+                              params={'url': self.request.get('url'), 'taskQ' : Queue} )
             elif ac.isdone() == True:
                 print "TASK DONE"
                 dbG.updateStatus([self.request.get('url')])
