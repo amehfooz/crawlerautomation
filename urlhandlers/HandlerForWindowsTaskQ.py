@@ -9,19 +9,19 @@ import pickle
 import datetime
 from utilities.logger import logThis, AEL_LEVEL_INFO, AEL_LEVEL_DEBUG,\
     AEL_LEVEL_CRITICAL
-from Tasks.iosCrawler import IOsCrawler
+from constants.constants import SUBTASK_WEBREQ_PICKLED_TASKOBJ
+from Tasks.WindowsCrawler import WindowsCrawler
 from google.appengine.api import taskqueue
 from constants.constants import *
 
-class HandlerForAppleTaskQ(webapp2.RequestHandler):
+class HandlerForWindowsTaskQ(webapp2.RequestHandler):
     def post(self):
         try:
             logThis(AEL_LEVEL_INFO, 'SUBTASK:START') 
             
             Queue = self.request.get('taskQ')
 
-            print "IOS CRAWL STARTING"
-            ac = IOsCrawler(self.request.get('url'))
+            ac = WindowsCrawler(self.request.get('url'))
             
             logThis(AEL_LEVEL_INFO, str(ac.isdone()) )
 
@@ -29,7 +29,6 @@ class HandlerForAppleTaskQ(webapp2.RequestHandler):
             if ac.isdone() == False and ac.retry() == True:
                 taskName = self.request.get('url')
                 
-                print "THIS IS QUEUE", Queue
                 task_name_on_Q = '[%s_%s]' % (taskName, 
                                               datetime.datetime.now().strftime("[%Y-%m-%d %H:%M:%S]")) 
                 task_name_on_Q = re.sub('[^a-zA-Z0-9_-]', '_', task_name_on_Q)
@@ -42,6 +41,6 @@ class HandlerForAppleTaskQ(webapp2.RequestHandler):
 
         #POST EXCEPT 
         except:
-            logThis(AEL_LEVEL_CRITICAL, "EXP on HandlerForAppleTaskQ-" + traceback.format_exc())
+            logThis(AEL_LEVEL_CRITICAL, "EXP on HandlerForWindowsTaskQ-" + traceback.format_exc())
                         
-app = webapp2.WSGIApplication([('/_ah/queue/appleTaskQ', HandlerForAppleTaskQ)], debug=True)
+app = webapp2.WSGIApplication([('/_ah/queue/windowsTaskQ', HandlerForWindowsTaskQ)], debug=True)

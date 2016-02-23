@@ -29,6 +29,8 @@ class BaseCrawler(object):
 
 
 class IOsCrawler(BaseCrawler):
+    retries = {}
+
     def isdone(self):
         return self.done
 
@@ -95,7 +97,9 @@ class IOsCrawler(BaseCrawler):
         service_account = 'naveed@apps-1149.iam.gserviceaccount.com'# Service account email       
         json_key = 'sevice_key.json'# JSON key provided by Google
 
-
+        project_id = 'apps-1149'
         # Inserting data into table.
         client = get_client(project_id, json_key_file=json_key, readonly=False)
         self.done = client.push_rows('Temp', 'AppStoreTest', rows, 'id')
+
+IOsCrawler('https://itunes.apple.com/us/app/pop-the-lock/id979100082?mt=8&v0=WWW-NAUS-ITSTOP100-FREEAPPS&l=en&ign-mpt=uo%3D4')

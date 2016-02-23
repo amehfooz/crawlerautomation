@@ -10,3 +10,6 @@ queue:
 - name: appleTaskQ
   target: backendfortasks
   rate: 1/s
+- name: windowsTaskQ
+  target: backendfortasks
+  rate: 1/s

@@ -35,7 +35,7 @@ class DataBase(object):
 
     def populate(self, table):
         client = get_client(project_id, json_key_file=json_key, readonly=False)
-        qry = "SELECT Name, Url  FROM [%s] LIMIT 20" % table
+        qry = "SELECT Name, Url  FROM [%s] LIMIT 1000" % table
 
         try:
             job_id, results = client.query(qry, timeout=3000)
@@ -79,7 +79,14 @@ class DataBase(object):
             query = """UPDATE AppStore SET ScanStatus = TRUE, LastScanned = NOW() WHERE URL = %s OR 1 = %s"""
         elif self.scantable == 'Windows':
             query = """UPDATE Windows SET ScanStatus = TRUE, LastScanned = NOW() WHERE URL = %s OR 1 = %s"""
-        cursor = self.conn.cursor()
+
+        cursor = 0
+        try:
+            cursor = self.conn.cursor()
+        except:
+            self.conn = mysql.connector.connect(host=HOST, database=DB, user= USER, password = PWD)
+            cursor = self.connn.cursor()
+            
         cursor.executemany(query, urls)
 
         self.conn.commit()

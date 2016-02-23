@@ -27,6 +27,7 @@ class BaseCrawler(object):
 
 
 class WindowsCrawler(BaseCrawler):
+    retries = {}
     def isdone(self):
         return self.done
 
@@ -107,7 +108,7 @@ class WindowsCrawler(BaseCrawler):
 
         service_account = 'naveed@apps-1149.iam.gserviceaccount.com'# Service account email       
         json_key = 'sevice_key.json'# JSON key provided by Google
-
+        project_id = 'apps-1149'
 
         # Inserting data into table.
         client = get_client(project_id, json_key_file=json_key, readonly=False)
